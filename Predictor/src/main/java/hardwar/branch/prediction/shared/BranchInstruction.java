@@ -13,7 +13,7 @@ public class BranchInstruction {
         this.instructionAddress = instructionAddress;
         this.jumpAddress = jumpAddress;
     }
-
+    
     public Bit[] getOpcode() {
         return opcode;
     }

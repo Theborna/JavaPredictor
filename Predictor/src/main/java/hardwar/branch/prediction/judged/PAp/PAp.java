@@ -24,26 +24,51 @@ public class PAp implements BranchPredictor {
         // TODO: complete the constructor
         this.branchInstructionSize = branchInstructionSize;
 
+
         // Initialize the PABHR with the given bhr and branch instruction size
-        PABHR = null;
+        PABHR = new RegisterBank(branchInstructionSize, BHRSize);
 
-        // Initializing the PAPHT with BranchInstructionSize as PHT Selector and 2^BHRSize row as each PHT entries
+        // Initializing the PAPHT with K bit as PHT selector and 2^BHRSize row as each
+        // PHT entries
         // number and SCSize as block size
-        PAPHT = null;
+        PAPHT = new PerAddressPredictionHistoryTable(
+                branchInstructionSize, 1 << BHRSize, SCSize);
 
-        // Initialize the SC register
-        SC = null;
+        // Initialize the saturating counter
+        this.SC = new SIPORegister("SC", SCSize, null);
     }
 
     @Override
     public BranchResult predict(BranchInstruction branchInstruction) {
-        // TODO: complete Task 1
-        return BranchResult.NOT_TAKEN;
+        // get BHR value
+        ShiftRegister BHR = PABHR.read(branchInstruction.getInstructionAddress());
+        // concatenate the instruction address
+        // hashing the address
+        Bit[] hash = getCacheEntry(branchInstruction.getInstructionAddress(), BHR.read());
+
+        // initialize the PHT if empty
+        PAPHT.putIfAbsent(hash, getDefaultBlock());
+        // read from the cache
+        Bit[] block = PAPHT.get(hash);
+        // load into the SC register
+        SC.load(block);
+        return BranchResult.of(block[0].getValue());
     }
 
     @Override
     public void update(BranchInstruction instruction, BranchResult actual) {
-        // TODO:complete Task 2
+        // counting from the SC register
+        Bit[] counted = CombinationalLogic.count(this.SC.read(),
+                BranchResult.isTaken(actual), CountMode.SATURATING);
+        // updating our cache
+        // get BHR value
+        ShiftRegister BHR = PABHR.read(instruction.getInstructionAddress());
+        Bit[] hash = getCacheEntry(instruction.getInstructionAddress(), BHR.read());
+
+        PAPHT.put(hash, counted);
+        // updating the BHR
+        BHR.insert(Bit.of(BranchResult.isTaken(actual)));
+        PABHR.write(instruction.getInstructionAddress(), BHR.read());
     }
 
 
