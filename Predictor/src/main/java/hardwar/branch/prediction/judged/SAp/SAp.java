@@ -38,7 +38,8 @@ public class SAp implements BranchPredictor {
     @Override
     public BranchResult predict(BranchInstruction branchInstruction) {
         // get BHR value
-        ShiftRegister BHR = PSBHR.read(hash(branchInstruction.getInstructionAddress()));
+        Bit[] address = getRBAddressLine(branchInstruction.getInstructionAddress());
+        ShiftRegister BHR = PSBHR.read(address);
         // concatenate the instruction address
         // hashing the address
         Bit[] hash = getCacheEntry(branchInstruction.getInstructionAddress(), BHR.read());
@@ -59,13 +60,14 @@ public class SAp implements BranchPredictor {
                 BranchResult.isTaken(actual), CountMode.SATURATING);
         // updating our cache
         // get BHR value
-        ShiftRegister BHR = PSBHR.read(hash(instruction.getInstructionAddress()));
+        Bit[] address = getRBAddressLine(instruction.getInstructionAddress());
+        ShiftRegister BHR = PSBHR.read(address);
         Bit[] hash = getCacheEntry(instruction.getInstructionAddress(), BHR.read());
 
         PAPHT.put(hash, counted);
         // updating the BHR
         BHR.insert(Bit.of(BranchResult.isTaken(actual)));
-        PSBHR.write(hash, BHR.read());
+        PSBHR.write(address, BHR.read());
     }
 
     private Bit[] getRBAddressLine(Bit[] branchAddress) {
