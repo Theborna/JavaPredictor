@@ -1,6 +1,5 @@
 package hardwar.branch.prediction.judged.SAp;
 
-
 import hardwar.branch.prediction.shared.*;
 import hardwar.branch.prediction.shared.devices.*;
 
@@ -66,9 +65,8 @@ public class SAp implements BranchPredictor {
         PAPHT.put(hash, counted);
         // updating the BHR
         BHR.insert(Bit.of(BranchResult.isTaken(actual)));
-        PSBHR.write(instruction.getInstructionAddress(), BHR.read());
+        PSBHR.write(hash, BHR.read());
     }
-
 
     private Bit[] getRBAddressLine(Bit[] branchAddress) {
         // hash the branch address
@@ -83,13 +81,20 @@ public class SAp implements BranchPredictor {
         return cacheEntry;
     }
 
-
-    /**
-     * hash N bits to a K bit value
-     *
-     * @param bits program counter
-     * @return hash value of fist M bits of `bits` in K bits
+    /*
+     * 
+     * hash N
+     * bits to
+     * a K
+     * bit value**
+     * 
+     * @param bits program counter*@return
+     * hash value
+     * of fist
+     * M bits of`bits`
+     * in K bits
      */
+
     private Bit[] hash(Bit[] bits) {
         Bit[] hash = new Bit[KSize];
 
@@ -107,9 +112,16 @@ public class SAp implements BranchPredictor {
         return hash;
     }
 
-    /**
-     * @return a zero series of bits as default value of cache block
+    /*
+     * @return
+     * 
+     * a zero
+     * series of
+     * bits as default
+     * value of
+     * cache block
      */
+
     private Bit[] getDefaultBlock() {
         Bit[] defaultBlock = new Bit[SC.getLength()];
         Arrays.fill(defaultBlock, Bit.ZERO);
