@@ -38,9 +38,8 @@ public class SAs implements BranchPredictor {
 
     @Override
     public BranchResult predict(BranchInstruction branchInstruction) {
-        // hash the address
-        Bit[] address = getAddressLine(branchInstruction.getInstructionAddress());
         // get BHR value
+        Bit[] address = getAddressLine(branchInstruction.getInstructionAddress());
         ShiftRegister BHR = PSBHR.read(address);
         // concatenate the instruction address
         // hashing the address
@@ -61,8 +60,8 @@ public class SAs implements BranchPredictor {
         Bit[] counted = CombinationalLogic.count(this.SC.read(),
                 BranchResult.isTaken(actual), CountMode.SATURATING);
         // updating our cache
-        Bit[] address = getAddressLine(branchInstruction.getInstructionAddress());
         // get BHR value
+        Bit[] address = getAddressLine(branchInstruction.getInstructionAddress());
         ShiftRegister BHR = PSBHR.read(address);
         Bit[] hash = getCacheEntry(branchInstruction.getInstructionAddress(), BHR.read());
 
