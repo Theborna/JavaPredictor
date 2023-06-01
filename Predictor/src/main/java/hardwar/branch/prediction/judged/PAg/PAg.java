@@ -23,15 +23,15 @@ public class PAg implements BranchPredictor {
      * @param branchInstructionSize the number of bits which is used for saving a branch instruction
      */
     public PAg(int BHRSize, int SCSize, int branchInstructionSize) {
-        // TODO: complete the constructor
-        // Initialize the PABHR with the given bhr and branch instruction size
-        PABHR = null;
+        // Initialize the BHR register with the given size and no default value
+        this.PABHR = new RegisterBank(branchInstructionSize, BHRSize);
 
-        // Initialize the PHT with a size of 2^size and each entry having a saturating counter of size "SCSize"
-        PHT = null;
+        // Initialize the PHT with a size of 2^size and each entry having a saturating
+        // counter of size "SCSize"
+        this.PHT = new PageHistoryTable(1 << BHRSize, SCSize);
 
         // Initialize the SC register
-        SC = null;
+        this.SC = new SIPORegister("SC", SCSize, null);
     }
 
     /**
@@ -40,8 +40,17 @@ public class PAg implements BranchPredictor {
      */
     @Override
     public BranchResult predict(BranchInstruction instruction) {
-        // TODO: complete Task 1
-        return BranchResult.NOT_TAKEN;
+        ShiftRegister BHR = PABHR.read(instruction.getInstructionAddress());
+        // read the bhr
+        Bit[] bhrData = BHR.read();
+        // initialize the PHT if empty
+        PHT.putIfAbsent(bhrData, getDefaultBlock());
+        // read from the cache
+        Bit[] block = PHT.get(bhrData);
+        // load into the SC register
+        SC.load(block);
+        PABHR.write(instruction.getInstructionAddress(), BHR.read());
+        return BranchResult.of(block[0].getValue());
     }
 
     /**
@@ -50,7 +59,15 @@ public class PAg implements BranchPredictor {
      */
     @Override
     public void update(BranchInstruction instruction, BranchResult actual) {
-        // TODO: complete Task 2
+        ShiftRegister BHR = PABHR.read(instruction.getInstructionAddress());
+        // counting from the SC register
+        Bit[] counted = CombinationalLogic.count(this.SC.read(),
+                BranchResult.isTaken(actual), CountMode.SATURATING);
+        // updating our cache
+        PHT.put(BHR.read(), counted);
+        // updating the BHR
+        BHR.insert(Bit.of(BranchResult.isTaken(actual)));
+        PABHR.write(instruction.getInstructionAddress(), BHR.read());
     }
 
     /**
