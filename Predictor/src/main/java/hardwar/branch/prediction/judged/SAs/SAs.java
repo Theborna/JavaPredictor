@@ -43,8 +43,8 @@ public class SAs implements BranchPredictor {
         ShiftRegister BHR = PSBHR.read(address);
         // concatenate the instruction address
         // hashing the address
-        Bit[] concat = getCacheEntry(branchInstruction.getInstructionAddress(), BHR.read());
-        Bit[] hash = getAddressLine(concat);
+        Bit[] hash = getCacheEntry(branchInstruction.getInstructionAddress(), BHR.read());
+        
         // initialize the PHT if empty
         PSPHT.putIfAbsent(hash, getDefaultBlock());
         // read from the cache
@@ -77,13 +77,16 @@ public class SAs implements BranchPredictor {
     }
 
     private Bit[] getCacheEntry(Bit[] branchAddress, Bit[] BHRValue) {
-        // Concatenate the branch address bits with the BHR bits
-        Bit[] cacheEntry = new Bit[branchAddress.length + BHRValue.length];
-        System.arraycopy(branchAddress, 0, cacheEntry, 0, KSize);
-        System.arraycopy(BHRValue, 0, cacheEntry, branchAddress.length, BHRValue.length);
+        // hash the branch address
+        Bit[] hashKSize = CombinationalLogic.hash(branchAddress, KSize, hashMode);
+
+        // Concatenate the Hash bits with the BHR bits
+        Bit[] cacheEntry = new Bit[hashKSize.length + BHRValue.length];
+        System.arraycopy(hashKSize, 0, cacheEntry, 0, hashKSize.length);
+        System.arraycopy(BHRValue, 0, cacheEntry, hashKSize.length, BHRValue.length);
+
         return cacheEntry;
     }
-
     /**
      * @return a zero series of bits as default value of cache block
      */
