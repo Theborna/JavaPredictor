@@ -15,33 +15,38 @@ public class GAg implements BranchPredictor {
     }
 
     /**
-     * Creates a new GAg predictor with the given BHR register size and initializes the BHR and PHT.
+     * Creates a new GAg predictor with the given BHR register size and initializes
+     * the BHR and PHT.
      *
      * @param BHRSize the size of the BHR register
-     * @param SCSize  the size of the register which hold the saturating counter value and the cache block size
+     * @param SCSize  the size of the register which hold the saturating counter
+     *                value and the cache block size
      */
     public GAg(int BHRSize, int SCSize) {
-        // TODO : complete the constructor
         // Initialize the BHR register with the given size and no default value
-        this.BHR = null;
+        this.BHR = new SIPORegister("BHR", BHRSize, null);
 
-        // Initialize the PHT with a size of 2^size and each entry having a saturating counter of size "SCSize"
-        PHT = null;
+        // Initialize the PHT with a size of 2^size and each entry having a saturating
+        // counter of size "SCSize"
+        this.PHT = new PageHistoryTable(1 << BHRSize, SCSize);
 
         // Initialize the SC register
-        SC = null;
+        this.SC = new SIPORegister("SC", SCSize, null);
     }
 
     /**
-     * Predicts the result of a branch instruction based on the global branch history
+     * Predicts the result of a branch instruction based on the global branch
+     * history
      *
      * @param branchInstruction the branch instruction
      * @return the predicted outcome of the branch instruction (taken or not taken)
      */
     @Override
     public BranchResult predict(BranchInstruction branchInstruction) {
-        // TODO : complete Task 1
-        return BranchResult.NOT_TAKEN;
+        Bit[] bhrData = BHR.read();
+        Bit[] block = PHT.get(bhrData);
+        SC.load(block);
+        return BranchResult.of(block[0].getValue());
     }
 
     /**
@@ -52,9 +57,11 @@ public class GAg implements BranchPredictor {
      */
     @Override
     public void update(BranchInstruction instruction, BranchResult actual) {
-        // TODO: complete Task 2
+        Bit[] counted = CombinationalLogic.count(this.SC.read(),
+                BranchResult.isTaken(actual), CountMode.SATURATING);
+        PHT.put(BHR.read(), counted);
+        BHR.load(counted);
     }
-
 
     /**
      * @return a zero series of bits as default value of cache block

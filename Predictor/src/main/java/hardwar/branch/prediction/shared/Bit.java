@@ -22,7 +22,8 @@ public enum Bit {
      */
     public static int toNumber(Bit[] array) {
         int result = 0;
-        for (Bit bit : array) result = (result << 1) | (bit == ONE ? 1 : 0);
+        for (Bit bit : array)
+            result = (result << 1) | (bit == ONE ? 1 : 0);
         return result;
     }
 
