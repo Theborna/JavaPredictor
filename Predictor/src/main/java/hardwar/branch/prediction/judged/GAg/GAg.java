@@ -62,9 +62,12 @@ public class GAg implements BranchPredictor {
      */
     @Override
     public void update(BranchInstruction instruction, BranchResult actual) {
+        // counting from the SC register
         Bit[] counted = CombinationalLogic.count(this.SC.read(),
                 BranchResult.isTaken(actual), CountMode.SATURATING);
+        // updating our cache
         PHT.put(BHR.read(), counted);
+        // updating the BHR
         BHR.insert(Bit.of(BranchResult.isTaken(actual)));
     }
 

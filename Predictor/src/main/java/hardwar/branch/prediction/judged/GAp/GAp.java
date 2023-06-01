@@ -16,38 +16,60 @@ public class GAp implements BranchPredictor {
     }
 
     /**
-     * Creates a new GAp predictor with the given BHR register size and initializes the PAPHT based on
+     * Creates a new GAp predictor with the given BHR register size and initializes
+     * the PAPHT based on
      * the branch instruction length and saturating counter size
      *
      * @param BHRSize               the size of the BHR register
-     * @param SCSize                the size of the register which hold the saturating counter value
-     * @param branchInstructionSize the number of bits which is used for saving a branch instruction
+     * @param SCSize                the size of the register which hold the
+     *                              saturating counter value
+     * @param branchInstructionSize the number of bits which is used for saving a
+     *                              branch instruction
      */
     public GAp(int BHRSize, int SCSize, int branchInstructionSize) {
-        // TODO: complete the constructor
-        this.branchInstructionSize = 0;
+        this.branchInstructionSize = branchInstructionSize;
 
         // Initialize the BHR register with the given size and no default value
-        this.BHR = null;
+        this.BHR = new SIPORegister("BHR", BHRSize, null);
 
-        // Initializing the PAPHT with BranchInstructionSize as PHT Selector and 2^BHRSize row as each PHT entries
+        // Initializing the PAPHT with BranchInstructionSize as PHT Selector and
+        // 2^BHRSize row as each PHT entries
         // number and SCSize as block size
-        PAPHT = null;
+        this.PAPHT = new PerAddressPredictionHistoryTable(
+                branchInstructionSize,
+                1 << BHRSize, SCSize);
 
         // Initialize the SC register
-        SC = null;
+        this.SC = new SIPORegister("SC", SCSize, null);
     }
 
     /**
-     * predicts the result of a branch instruction based on the global branch history and branch address
+     * predicts the result of a branch instruction based on the global branch
+     * history and branch address
      *
      * @param branchInstruction the branch instruction
      * @return the predicted outcome of the branch instruction (taken or not taken)
      */
     @Override
     public BranchResult predict(BranchInstruction branchInstruction) {
-        // TODO: complete Task 1
-        return BranchResult.NOT_TAKEN;
+        // read the bhr
+        Bit[] bhrData = BHR.read();
+
+        // concatenate the instruction address
+        int len1 = branchInstruction.getInstructionAddress().length;
+        int len2 = BHR.getLength();
+        Bit[] concatenated = new Bit[len1 + len2];
+        System.arraycopy(branchInstruction.getInstructionAddress(), 0,
+                concatenated, 0, len1);
+        System.arraycopy(bhrData, 0, concatenated, len1, len2);
+
+        // initialize the PHT if empty
+        PAPHT.putIfAbsent(concatenated, getDefaultBlock());
+        // read from the cache
+        Bit[] block = PAPHT.get(concatenated);
+        // load into the SC register
+        SC.load(block);
+        return BranchResult.of(block[0].getValue());
     }
 
     /**
@@ -58,9 +80,24 @@ public class GAp implements BranchPredictor {
      */
     @Override
     public void update(BranchInstruction branchInstruction, BranchResult actual) {
-        // TODO : complete Task 2
+        // counting from the SC register
+        Bit[] counted = CombinationalLogic.count(this.SC.read(),
+                BranchResult.isTaken(actual), CountMode.SATURATING);
+        // updating our cache
+        // read the bhr
+        Bit[] bhrData = BHR.read();
+        // concatenate the instruction address
+        int len1 = branchInstruction.getInstructionAddress().length;
+        int len2 = BHR.getLength();
+        Bit[] concatenated = new Bit[len1 + len2];
+        System.arraycopy(branchInstruction.getInstructionAddress(), 0,
+                concatenated, 0, len1);
+        System.arraycopy(bhrData, 0, concatenated, len1, len2);
+        
+        PAPHT.put(concatenated, counted);
+        // updating the BHR
+        BHR.insert(Bit.of(BranchResult.isTaken(actual)));
     }
-
 
     /**
      * concat the branch address and BHR to retrieve the desired address
