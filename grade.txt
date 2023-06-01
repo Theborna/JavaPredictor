@@ -1,4 +1,4 @@
-Thu Jun  1 13:38:38 UTC 2023
+Thu Jun  1 13:42:51 UTC 2023
 GAg: 
 Test passed, 1000 out of 1000 assertions passed
 
@@ -37,7 +37,7 @@ Exception in thread "main" java.lang.NullPointerException
 	at hardwar.branch.prediction.shared.devices.PageHistoryTable.putIfAbsent(PageHistoryTable.java:31)
 	at hardwar.branch.prediction.shared.devices.PerAddressPredictionHistoryTable.putIfAbsent(PerAddressPredictionHistoryTable.java:107)
 	at hardwar.branch.prediction.shared.devices.PerAddressPredictionHistoryTable.putIfAbsent(PerAddressPredictionHistoryTable.java:31)
-	at hardwar.branch.prediction.judged.SAs.SAs.predict(SAs.java:50)
+	at hardwar.branch.prediction.judged.SAs.SAs.predict(SAs.java:49)
 	at hardwar.branch.prediction.judge.PredictorSimulator.lambda$simulate$0(PredictorSimulator.java:27)
 	at java.base/java.util.stream.IntPipeline$1$1.accept(IntPipeline.java:180)
 	at java.base/java.util.stream.Streams$RangeIntSpliterator.forEachRemaining(Streams.java:104)
