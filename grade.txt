@@ -1,7 +1,19 @@
-Thu Jun  1 11:11:23 UTC 2023
-GAg: 
-Exception in thread "main" hardwar.branch.prediction.judge.TestFailedException: Test failed, 101 out of 1000 assertions passed
-	at hardwar.branch.prediction.judge.Judge.main(Judge.java:39)
+Thu Jun  1 12:04:27 UTC 2023
+Exception in thread "main" java.lang.NullPointerException
+	at java.base/java.lang.System.arraycopy(Native Method)
+	at hardwar.branch.prediction.shared.devices.SIPORegister.load(SIPORegister.java:65)
+	at hardwar.branch.prediction.judged.GAg.GAg.predict(GAg.java:48)
+	at hardwar.branch.prediction.judge.PredictorSimulator.lambda$simulate$0(PredictorSimulator.java:27)
+	at java.base/java.util.stream.IntPipeline$1$1.accept(IntPipeline.java:180)
+	at java.base/java.util.stream.Streams$RangeIntSpliterator.forEachRemaining(Streams.java:104)
+	at java.base/java.util.Spliterator$OfInt.forEachRemaining(Spliterator.java:711)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.ReduceOps$ReduceOp.evaluateSequential(ReduceOps.java:921)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.base/java.util.stream.ReferencePipeline.collect(ReferencePipeline.java:682)
+	at hardwar.branch.prediction.judge.PredictorSimulator.simulate(PredictorSimulator.java:30)
+	at hardwar.branch.prediction.judge.Judge.main(Judge.java:32)
 GAp: 
 Exception in thread "main" hardwar.branch.prediction.judge.TestFailedException: Test failed, 287 out of 1000 assertions passed
 	at hardwar.branch.prediction.judge.Judge.main(Judge.java:39)
