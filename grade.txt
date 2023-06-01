@@ -1,4 +1,4 @@
-Thu Jun  1 13:31:13 UTC 2023
+Thu Jun  1 13:35:25 UTC 2023
 GAg: 
 Test passed, 1000 out of 1000 assertions passed
 
@@ -21,9 +21,9 @@ SAg:
 Test passed, 1000 out of 1000 assertions passed
 
 Exception in thread "main" java.lang.IllegalArgumentException: register bank selector is not valid
-	at hardwar.branch.prediction.shared.devices.RegisterBank.read(RegisterBank.java:52)
-	at hardwar.branch.prediction.judged.SAp.SAp.predict(SAp.java:41)
-	at hardwar.branch.prediction.judge.PredictorSimulator.lambda$simulate$0(PredictorSimulator.java:27)
+	at hardwar.branch.prediction.shared.devices.RegisterBank.write(RegisterBank.java:75)
+	at hardwar.branch.prediction.judged.SAp.SAp.update(SAp.java:68)
+	at hardwar.branch.prediction.judge.PredictorSimulator.lambda$simulate$0(PredictorSimulator.java:28)
 	at java.base/java.util.stream.IntPipeline$1$1.accept(IntPipeline.java:180)
 	at java.base/java.util.stream.Streams$RangeIntSpliterator.forEachRemaining(Streams.java:104)
 	at java.base/java.util.Spliterator$OfInt.forEachRemaining(Spliterator.java:711)
