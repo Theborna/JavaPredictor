@@ -1,9 +1,9 @@
-Thu Jun  1 12:04:27 UTC 2023
-Exception in thread "main" java.lang.NullPointerException
+Thu Jun  1 12:14:12 UTC 2023
+Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: arraycopy: last source index 4 out of bounds for object array[2]
 	at java.base/java.lang.System.arraycopy(Native Method)
 	at hardwar.branch.prediction.shared.devices.SIPORegister.load(SIPORegister.java:65)
-	at hardwar.branch.prediction.judged.GAg.GAg.predict(GAg.java:48)
-	at hardwar.branch.prediction.judge.PredictorSimulator.lambda$simulate$0(PredictorSimulator.java:27)
+	at hardwar.branch.prediction.judged.GAg.GAg.update(GAg.java:68)
+	at hardwar.branch.prediction.judge.PredictorSimulator.lambda$simulate$0(PredictorSimulator.java:28)
 	at java.base/java.util.stream.IntPipeline$1$1.accept(IntPipeline.java:180)
 	at java.base/java.util.stream.Streams$RangeIntSpliterator.forEachRemaining(Streams.java:104)
 	at java.base/java.util.Spliterator$OfInt.forEachRemaining(Spliterator.java:711)
