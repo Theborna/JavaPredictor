@@ -23,13 +23,13 @@ public class SAp implements BranchPredictor {
         this.KSize = KSize;
 
         // Initialize the PABHR with the given bhr and branch instruction size
-        PSBHR = new RegisterBank(branchInstructionSize, BHRSize);
+        PSBHR = new RegisterBank(KSize, BHRSize);
 
         // Initializing the PAPHT with K bit as PHT selector and 2^BHRSize row as each
         // PHT entries
         // number and SCSize as block size
         PAPHT = new PerAddressPredictionHistoryTable(
-                KSize, 1 << BHRSize, SCSize);
+                branchInstructionSize, 1 << BHRSize, SCSize);
 
         // Initialize the saturating counter
         this.SC = new SIPORegister("SC", SCSize, null);
